@@ -1,7 +1,12 @@
 {
 	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
-		"rootDir": "src"
+		"rootDir": "src",
+		"baseUrl": ".",
+		"paths": {
+			"$lib": ["src/lib"],
+			"$lib/*": ["src/lib/*"]
+		}
 	},
 	"include": ["src/**/*.ts", "src/**/*.svelte"],
 	"exclude": ["src/**/*.test.ts", "src/testing/**"]

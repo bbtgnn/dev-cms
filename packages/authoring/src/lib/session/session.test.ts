@@ -4,8 +4,8 @@ import {
 	createFakeTimers,
 	sampleEntry,
 	waitUntil,
-} from "../testing/authoring-test-fixtures";
-import { createFakeClient } from "../testing/fake-client";
+} from "../../testing/authoring-test-fixtures";
+import { createFakeClient } from "../../testing/fake-client";
 import { createDraftEligibility } from "./draft-eligibility";
 import { createAuthoringSession } from "./session";
 

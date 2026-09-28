@@ -10,7 +10,7 @@ import { resolver } from "@sjsf/form/resolvers/basic";
 import { translation } from "@sjsf/form/translations/en";
 import { setThemeContext, theme } from "@sjsf/shadcn4-theme";
 
-export const sjsfImports = {
+const sjsfImports = {
 	BasicForm,
 	createForm,
 	createFormIdBuilder,
@@ -21,3 +21,5 @@ export const sjsfImports = {
 	theme,
 	translation,
 } as const;
+
+void sjsfImports;

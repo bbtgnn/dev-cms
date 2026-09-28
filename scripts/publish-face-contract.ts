@@ -27,6 +27,7 @@ export type PublishFaceOptions = {
 	readonly catalog: Readonly<Record<string, string>>;
 	readonly workspaceVersion: (name: string) => string;
 	readonly svelteCondition?: boolean;
+	readonly sourceDir?: string;
 };
 
 function rewriteDeps(
@@ -59,59 +60,79 @@ function rewriteDeps(
 function workspaceSrcExports(
 	exportsField: unknown,
 	pkgLabel: string,
+	sourceDir: string,
 ): Record<string, string> {
+	const sourcePrefix = `./${sourceDir.replace(/^\.\//, "").replace(/\/$/, "")}/`;
 	if (
 		!exportsField ||
 		typeof exportsField !== "object" ||
 		Array.isArray(exportsField)
 	) {
 		throw new Error(
-			`${pkgLabel}: exports must be a map of ./src/* string paths`,
+			`${pkgLabel}: exports must be a map of ${sourcePrefix}* string paths`,
 		);
 	}
 	const out: Record<string, string> = {};
 	for (const [key, value] of Object.entries(exportsField)) {
-		if (typeof value !== "string") {
+		const targets =
+			typeof value === "string"
+				? [value]
+				: value && typeof value === "object" && !Array.isArray(value)
+					? Object.values(value)
+					: [];
+		if (
+			targets.length === 0 ||
+			targets.some((target) => typeof target !== "string")
+		) {
 			throw new Error(
-				`${pkgLabel} export "${key}": expected string path, got ${typeof value}`,
+				`${pkgLabel} export "${key}": expected a string path or flat condition map`,
 			);
 		}
-		if (!value.startsWith("./src/")) {
+		const uniqueTargets = [...new Set(targets as string[])];
+		if (uniqueTargets.length !== 1) {
 			throw new Error(
-				`${pkgLabel} export "${key}": expected ./src/*, got ${value}`,
+				`${pkgLabel} export "${key}": workspace conditions must point at one source file`,
+			);
+		}
+		const sourceTarget = uniqueTargets[0];
+		if (sourceTarget === undefined) continue;
+		if (!sourceTarget.startsWith(sourcePrefix)) {
+			throw new Error(
+				`${pkgLabel} export "${key}": expected ${sourcePrefix}*, got ${sourceTarget}`,
 			);
 		}
 		if (
-			!value.endsWith(".ts") &&
-			!value.endsWith(".astro") &&
-			!value.endsWith(".svelte")
+			!sourceTarget.endsWith(".ts") &&
+			!sourceTarget.endsWith(".astro") &&
+			!sourceTarget.endsWith(".svelte")
 		) {
 			throw new Error(
-				`${pkgLabel} export "${key}": expected ./src/*.{ts,astro,svelte}, got ${value}`,
+				`${pkgLabel} export "${key}": expected source *.{ts,astro,svelte}, got ${sourceTarget}`,
 			);
 		}
-		out[key] = value;
+		out[key] = sourceTarget;
 	}
 	return out;
 }
 
 function publishExportsFromSrc(
 	srcExports: Record<string, string>,
-	options: Pick<PublishFaceOptions, "svelteCondition">,
+	options: Pick<PublishFaceOptions, "svelteCondition" | "sourceDir">,
 ): Record<string, PublishExport> {
+	const sourcePrefix = `./${(options.sourceDir ?? "src").replace(/^\.\//, "").replace(/\/$/, "")}/`;
 	const out: Record<string, PublishExport> = {};
 	for (const [key, srcPath] of Object.entries(srcExports)) {
 		if (srcPath.endsWith(".astro")) {
-			const distPath = `./dist/${srcPath.slice("./src/".length)}`;
+			const distPath = `./dist/${srcPath.slice(sourcePrefix.length)}`;
 			out[key] = { import: distPath, default: distPath };
 			continue;
 		}
 		if (srcPath.endsWith(".svelte")) {
-			const distPath = `./dist/${srcPath.slice("./src/".length)}`;
+			const distPath = `./dist/${srcPath.slice(sourcePrefix.length)}`;
 			out[key] = { svelte: distPath, import: distPath, default: distPath };
 			continue;
 		}
-		const base = `./dist/${srcPath.slice("./src/".length, -".ts".length)}`;
+		const base = `./dist/${srcPath.slice(sourcePrefix.length, -".ts".length)}`;
 		const entry: PublishExport = {
 			types: `${base}.d.ts`,
 			import: `${base}.js`,
@@ -151,7 +172,11 @@ export function createPublishFace(
 	pkg.private = false;
 	pkg.files = ["dist"];
 	pkg.exports = publishExportsFromSrc(
-		workspaceSrcExports(workspacePkg.exports, options.packageName),
+		workspaceSrcExports(
+			workspacePkg.exports,
+			options.packageName,
+			options.sourceDir ?? "src",
+		),
 		options,
 	);
 	pkg.dependencies = rewriteDeps(pkg.dependencies, options);

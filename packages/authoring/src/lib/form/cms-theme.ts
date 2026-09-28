@@ -1,3 +1,4 @@
+import type { Theme } from "@sjsf/form";
 import { extendByRecord } from "@sjsf/form/lib/resolver";
 import "@sjsf/shadcn4-theme/extra-widgets/checkboxes-include";
 import "@sjsf/shadcn4-theme/extra-widgets/combobox-include";
@@ -105,7 +106,7 @@ export function setCmsThemeContext(): void {
 	});
 }
 
-export const theme = extendByRecord(shadcnTheme, {
+export const theme: Theme = extendByRecord(shadcnTheme, {
 	imageField: wrapFieldEditorForSjsf(ImageField),
 	referenceField: wrapFieldEditorForSjsf(ReferenceField),
 	literalField: wrapFieldEditorForSjsf(LiteralField),

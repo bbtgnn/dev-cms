@@ -16,8 +16,8 @@ import {
 	createFakeTimers,
 	sampleEntry,
 	waitUntil,
-} from "../testing/authoring-test-fixtures";
-import { createFakeClient } from "../testing/fake-client";
+} from "../../testing/authoring-test-fixtures";
+import { createFakeClient } from "../../testing/fake-client";
 import { type AuthoringStatus, createAutosaveController } from "./autosave";
 
 describe("authoring autosave", () => {
@@ -400,7 +400,7 @@ describe("authoring autosave self-host json", () => {
 		const previewPage = await readFile(
 			path.resolve(
 				path.dirname(fileURLToPath(import.meta.url)),
-				"../../../../demos/astro-simple/src/pages/posts/[id].astro",
+				"../../../../../demos/astro-simple/src/pages/posts/[id].astro",
 			),
 			"utf8",
 		);

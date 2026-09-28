@@ -8,8 +8,8 @@ import {
 	createFakeTimers,
 	sampleEntry,
 	waitUntil,
-} from "../testing/authoring-test-fixtures";
-import { createFakeClient } from "../testing/fake-client";
+} from "../../testing/authoring-test-fixtures";
+import { createFakeClient } from "../../testing/fake-client";
 import { openAuthoringSession } from "./open-authoring-session";
 
 const titleEditorSchema = {

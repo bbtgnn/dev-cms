@@ -6,8 +6,8 @@
 
 import { describe, expect, test } from "bun:test";
 import { resolveCmsCapabilities } from "@cms/core/fetch-client";
-import { sampleEntry } from "../testing/authoring-test-fixtures";
-import { createFakeClient } from "../testing/fake-client";
+import { sampleEntry } from "../../testing/authoring-test-fixtures";
+import { createFakeClient } from "../../testing/fake-client";
 import { createAuthoringSession } from "./session";
 
 const alwaysEligible = () => true;

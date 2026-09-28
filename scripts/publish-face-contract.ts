@@ -28,6 +28,7 @@ export type PublishFaceOptions = {
 	readonly workspaceVersion: (name: string) => string;
 	readonly svelteCondition?: boolean;
 	readonly sourceDir?: string;
+	readonly distExports?: boolean;
 };
 
 function rewriteDeps(
@@ -171,14 +172,32 @@ export function createPublishFace(
 	const pkg: PackageJson = { ...workspacePkg };
 	pkg.private = false;
 	pkg.files = ["dist"];
-	pkg.exports = publishExportsFromSrc(
-		workspaceSrcExports(
-			workspacePkg.exports,
-			options.packageName,
-			options.sourceDir ?? "src",
-		),
-		options,
-	);
+	if (options.distExports) {
+		for (const [key, value] of Object.entries(
+			(workspacePkg.exports ?? {}) as Record<string, unknown>,
+		)) {
+			for (const target of publishTargets(
+				value,
+				`${options.packageName} export "${key}"`,
+			)) {
+				if (!target.startsWith("./dist/")) {
+					throw new Error(
+						`${options.packageName} export "${key}": expected ./dist/*, got ${target}`,
+					);
+				}
+			}
+		}
+		pkg.exports = workspacePkg.exports;
+	} else {
+		pkg.exports = publishExportsFromSrc(
+			workspaceSrcExports(
+				workspacePkg.exports,
+				options.packageName,
+				options.sourceDir ?? "src",
+			),
+			options,
+		);
+	}
 	pkg.dependencies = rewriteDeps(pkg.dependencies, options);
 	pkg.peerDependencies = rewriteDeps(pkg.peerDependencies, options);
 	const bin = rewriteBin(workspacePkg.bin);

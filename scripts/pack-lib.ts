@@ -41,6 +41,8 @@ type PackConfig = {
 	svelteCondition?: boolean;
 	/** Workspace source root mapped to the top of dist by the package build. */
 	sourceDir?: string;
+	/** Workspace exports already point at packaged files under dist. */
+	distExports?: boolean;
 };
 
 const PACKAGES = {
@@ -52,7 +54,7 @@ const PACKAGES = {
 		dir: "packages/authoring",
 		build: ["bun", "run", "build:package"],
 		svelteCondition: true,
-		sourceDir: "src/lib",
+		distExports: true,
 	},
 	"@cms/astro": {
 		dir: "packages/astro",
@@ -169,6 +171,7 @@ export function packLib(name: PublishPackageName): PackedTarball {
 		workspaceVersion,
 		svelteCondition: cfg.svelteCondition,
 		sourceDir: cfg.sourceDir,
+		distExports: cfg.distExports,
 	});
 	assertPublishFace(path.join(pkgDir, "dist"), publishPkg);
 	writeFileSync(

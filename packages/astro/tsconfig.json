@@ -1,13 +1,8 @@
 {
 	"extends": "../../tsconfig.base.json",
 	"compilerOptions": {
-		"baseUrl": ".",
 		"rootDir": "src",
-		"types": ["node"],
-		"paths": {
-			"$lib/shadcn": ["../authoring/src/lib/shadcn"],
-			"$lib/shadcn/*": ["../authoring/src/lib/shadcn/*"]
-		}
+		"types": ["node"]
 	},
 	"include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.svelte"],
 	"exclude": ["src/**/*.test.ts", "src/fixtures/**"]

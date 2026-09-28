@@ -133,4 +133,30 @@ describe("publish face contract", () => {
 			},
 		});
 	});
+
+	test("preserves standard dist exports for a prebuilt Svelte library", () => {
+		const exports = {
+			".": {
+				types: "./dist/index.d.ts",
+				svelte: "./dist/index.js",
+				default: "./dist/index.js",
+			},
+		};
+		const pkg = createPublishFace(
+			{
+				name: "@cms/authoring",
+				private: true,
+				exports,
+			},
+			{
+				packageName: "@cms/authoring",
+				catalog: {},
+				workspaceVersion: () => "",
+				distExports: true,
+			},
+		);
+
+		expect(pkg.exports).toEqual(exports);
+		expect(pkg.private).toBe(false);
+	});
 });

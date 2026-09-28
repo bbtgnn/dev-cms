@@ -3,12 +3,12 @@
  * Kept so `svelte-check` fails if IDE/build resolution regresses.
  */
 import { createFormValidator } from "@sjsf/ajv8-validator";
-import { theme } from "@sjsf/basic-theme";
 import { BasicForm, createForm } from "@sjsf/form";
 import { createFormIdBuilder } from "@sjsf/form/id-builders/modern";
 import { createFormMerger } from "@sjsf/form/mergers/modern";
 import { resolver } from "@sjsf/form/resolvers/basic";
 import { translation } from "@sjsf/form/translations/en";
+import { setThemeContext, theme } from "@sjsf/shadcn4-theme";
 
 export const sjsfImports = {
 	BasicForm,
@@ -17,6 +17,7 @@ export const sjsfImports = {
 	createFormMerger,
 	createFormValidator,
 	resolver,
+	setThemeContext,
 	theme,
 	translation,
 } as const;

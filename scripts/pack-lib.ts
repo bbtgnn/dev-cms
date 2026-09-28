@@ -48,7 +48,7 @@ const PACKAGES = {
 	},
 	"@cms/authoring": {
 		dir: "packages/authoring",
-		build: ["bunx", "svelte-package", "-i", "src", "-o", "dist"],
+		build: ["bun", "run", "build:package"],
 		svelteCondition: true,
 	},
 	"@cms/astro": {

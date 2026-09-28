@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import svelte from "@astrojs/svelte";
 import { cms } from "@cms/astro";
 import { defineConfig } from "astro/config";
@@ -17,6 +18,14 @@ export default defineConfig({
 		optimizeDeps: {
 			// Include transitive workspace packages (@cms/authoring via @cms/astro).
 			exclude: ["@cms/astro", "@cms/authoring", "@cms/core"],
+		},
+		resolve: {
+			// Workspace @cms/authoring exposes source; published output rewrites this alias.
+			alias: {
+				"$lib/shadcn": fileURLToPath(
+					new URL("../../packages/authoring/src/lib/shadcn", import.meta.url),
+				),
+			},
 		},
 	},
 });

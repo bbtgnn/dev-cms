@@ -11,8 +11,8 @@ import { createFormMerger } from "@sjsf/form/mergers/modern";
 import { resolver } from "@sjsf/form/resolvers/basic";
 import { translation } from "@sjsf/form/translations/en";
 import { setContext, untrack } from "svelte";
-import "@sjsf/basic-theme/css/basic.css";
-import { theme } from "./cms-theme";
+import "../shadcn.css";
+import { setCmsThemeContext, theme } from "./cms-theme";
 import type {
 	CmsAssetsFieldContext,
 	CmsEntryContext,
@@ -45,6 +45,8 @@ let {
 	 */
 	onChange?: (data: Record<string, unknown>) => void;
 } = $props();
+
+setCmsThemeContext();
 
 const entryBox: CmsEntryContext = $state({
 	collection: "",

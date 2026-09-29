@@ -71,4 +71,92 @@ describe("publish face contract", () => {
 			rmSync(root, { recursive: true, force: true });
 		}
 	});
+
+	test("maps a conventional SvelteKit library source directory to dist root", () => {
+		const pkg = createPublishFace(
+			{
+				name: "@cms/authoring",
+				exports: {
+					".": "./src/lib/index.ts",
+					"./config": "./src/lib/config/index.ts",
+				},
+			},
+			{
+				packageName: "@cms/authoring",
+				catalog: {},
+				workspaceVersion: () => "",
+				sourceDir: "src/lib",
+				svelteCondition: true,
+			},
+		);
+
+		expect(pkg.exports).toEqual({
+			".": {
+				types: "./dist/index.d.ts",
+				import: "./dist/index.js",
+				svelte: "./dist/index.js",
+			},
+			"./config": {
+				types: "./dist/config/index.d.ts",
+				import: "./dist/config/index.js",
+				svelte: "./dist/config/index.js",
+			},
+		});
+	});
+
+	test("accepts workspace condition maps when every condition targets one source", () => {
+		const pkg = createPublishFace(
+			{
+				name: "@cms/authoring",
+				exports: {
+					".": {
+						types: "./src/lib/index.ts",
+						svelte: "./src/lib/index.ts",
+						default: "./src/lib/index.ts",
+					},
+				},
+			},
+			{
+				packageName: "@cms/authoring",
+				catalog: {},
+				workspaceVersion: () => "",
+				sourceDir: "src/lib",
+				svelteCondition: true,
+			},
+		);
+
+		expect(pkg.exports).toEqual({
+			".": {
+				types: "./dist/index.d.ts",
+				import: "./dist/index.js",
+				svelte: "./dist/index.js",
+			},
+		});
+	});
+
+	test("preserves standard dist exports for a prebuilt Svelte library", () => {
+		const exports = {
+			".": {
+				types: "./dist/index.d.ts",
+				svelte: "./dist/index.js",
+				default: "./dist/index.js",
+			},
+		};
+		const pkg = createPublishFace(
+			{
+				name: "@cms/authoring",
+				private: true,
+				exports,
+			},
+			{
+				packageName: "@cms/authoring",
+				catalog: {},
+				workspaceVersion: () => "",
+				distExports: true,
+			},
+		);
+
+		expect(pkg.exports).toEqual(exports);
+		expect(pkg.private).toBe(false);
+	});
 });

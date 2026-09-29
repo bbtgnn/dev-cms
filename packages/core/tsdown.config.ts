@@ -1,26 +1,8 @@
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { defineConfig } from "tsdown";
-
-const pkg = JSON.parse(
-	readFileSync(
-		fileURLToPath(new URL("./package.json", import.meta.url)),
-		"utf8",
-	),
-) as { exports: Record<string, string> };
-
-const entry = Object.values(pkg.exports);
-if (
-	entry.length === 0 ||
-	entry.some((p) => typeof p !== "string" || !p.startsWith("./src/"))
-) {
-	throw new Error(
-		"@cms/core package.json exports must be ./src/* string paths",
-	);
-}
+import { buildEntries } from "./package-entries.ts";
 
 export default defineConfig({
-	entry,
+	entry: [...buildEntries],
 	outDir: "dist",
 	dts: true,
 	format: ["esm"],

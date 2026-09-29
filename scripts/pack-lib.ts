@@ -1,10 +1,9 @@
 /**
  * Build a workspace package, then pack a publish face from a staging dir.
  *
- * Workspace `package.json` stays on `src/` + `catalog:` / `workspace:*`.
- * Staging gets a fresh publish `package.json` (dist exports + concrete versions)
- * derived from the workspace `exports` map — one source of truth for subpaths.
- * Never mutates the live workspace face.
+ * Workspace `package.json` exports the live `dist/` face (ADR-0027). Staging
+ * reuses that export map and rewrites `catalog:` / `workspace:*` dependency
+ * ranges to concrete versions. Never mutates the live workspace face.
  *
  * Authoring keeps tests colocated under `src/`. `@sveltejs/package` has no
  * exclude, so {@link filterPublishDist} strips test/fixture emit before pack.
@@ -48,7 +47,8 @@ type PackConfig = {
 const PACKAGES = {
 	"@cms/core": {
 		dir: "packages/core",
-		build: ["bunx", "tsdown"],
+		build: ["bun", "run", "build"],
+		distExports: true,
 	},
 	"@cms/authoring": {
 		dir: "packages/authoring",
@@ -58,7 +58,8 @@ const PACKAGES = {
 	},
 	"@cms/astro": {
 		dir: "packages/astro",
-		build: ["bunx", "tsdown"],
+		build: ["bun", "run", "build"],
+		distExports: true,
 	},
 } satisfies Record<string, PackConfig>;
 

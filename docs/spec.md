@@ -90,6 +90,7 @@ Thematic index only — open the ADR for rationale. Superseded ADRs stay in
 - [ADR-0008](adr/0008-backend-agnostic-ui-fs-first-adapter.md)
 - [ADR-0018](adr/0018-three-packages-for-adr-0008-layers.md)
 - [ADR-0026](adr/0026-product-name-dev-cms.md)
+- [ADR-0027](adr/0027-watched-dist-workspace-face.md)
 - [ADR-0016](adr/0016-astro-convention-install-surface.md)
 
 ### Fields and schema projections

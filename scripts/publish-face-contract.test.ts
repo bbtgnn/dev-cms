@@ -159,4 +159,89 @@ describe("publish face contract", () => {
 		expect(pkg.exports).toEqual(exports);
 		expect(pkg.private).toBe(false);
 	});
+
+	test("preserves live dist export maps and dist bins while rewriting deps", () => {
+		const exports = {
+			".": {
+				types: "./dist/index.d.ts",
+				import: "./dist/index.js",
+				default: "./dist/index.js",
+			},
+			"./shell-page.astro": {
+				import: "./dist/host/shell-page.astro",
+				default: "./dist/host/shell-page.astro",
+			},
+		};
+		const live: PackageJson = {
+			name: "@cms/astro",
+			private: true,
+			exports,
+			bin: { cms: "./dist/cli.js" },
+			dependencies: { "@cms/core": "workspace:*", zod: "catalog:" },
+			devDependencies: { typescript: "catalog:" },
+			scripts: { build: "tsdown" },
+		};
+		const staged = createPublishFace(live, {
+			packageName: "@cms/astro",
+			catalog: { zod: "^4.0.0" },
+			workspaceVersion: (name) => (name === "@cms/core" ? "0.1.0" : ""),
+			distExports: true,
+		});
+
+		expect(staged.exports).toEqual(live.exports);
+		expect(staged.bin).toEqual({ cms: "./dist/cli.js" });
+		expect(staged.dependencies).toEqual({
+			"@cms/core": "0.1.0",
+			zod: "^4.0.0",
+		});
+		expect(staged.devDependencies).toBeUndefined();
+		expect(staged.scripts).toBeUndefined();
+		expect(staged.private).toBe(false);
+		expect(staged.files).toEqual(["dist"]);
+	});
+
+	test("live and staged dist targets resolve to the same artifacts", () => {
+		const root = mkdtempSync(path.join("/tmp", "publish-face-live-staged-"));
+		try {
+			const dist = path.join(root, "dist");
+			mkdirSync(path.join(dist, "host"), { recursive: true });
+			for (const file of [
+				"index.js",
+				"index.d.ts",
+				"cli.js",
+				"host/shell-page.astro",
+			]) {
+				writeFileSync(path.join(dist, file), "");
+			}
+			const exports = {
+				".": {
+					types: "./dist/index.d.ts",
+					import: "./dist/index.js",
+					default: "./dist/index.js",
+				},
+				"./shell-page.astro": {
+					import: "./dist/host/shell-page.astro",
+					default: "./dist/host/shell-page.astro",
+				},
+			};
+			const live: PackageJson = {
+				name: "@cms/astro",
+				exports,
+				bin: { cms: "./dist/cli.js" },
+				dependencies: { zod: "catalog:" },
+			};
+			const staged = createPublishFace(live, {
+				packageName: "@cms/astro",
+				catalog: { zod: "^4.0.0" },
+				workspaceVersion: () => "",
+				distExports: true,
+			});
+			expect(staged.exports).toEqual(live.exports);
+			expect(staged.bin).toEqual(live.bin);
+			expect(() => assertPublishFace(dist, live)).not.toThrow();
+			expect(() => assertPublishFace(dist, staged)).not.toThrow();
+		} finally {
+			rmSync(root, { recursive: true, force: true });
+		}
+	});
 });

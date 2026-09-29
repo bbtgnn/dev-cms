@@ -1,23 +1,16 @@
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { defineConfig } from "tsdown";
 
-const pkg = JSON.parse(
-	readFileSync(
-		fileURLToPath(new URL("./package.json", import.meta.url)),
-		"utf8",
-	),
-) as { exports: Record<string, string> };
-
-const entry = Object.values(pkg.exports);
-if (
-	entry.length === 0 ||
-	entry.some((p) => typeof p !== "string" || !p.startsWith("./src/"))
-) {
-	throw new Error(
-		"@cms/core package.json exports must be ./src/* string paths",
-	);
-}
+/** Build inputs stay independent of the consumer export map (ADR-0027). */
+const entry = [
+	"./src/index.ts",
+	"./src/define-cms/define-cms.ts",
+	"./src/protocol/fetch-client.ts",
+	"./src/form-tree/form-tree.ts",
+	"./src/http/index.ts",
+	"./src/node.ts",
+	"./src/protocol/protocol.ts",
+	"./src/semantic/index.ts",
+];
 
 export default defineConfig({
 	entry,

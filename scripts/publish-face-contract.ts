@@ -145,11 +145,15 @@ function publishExportsFromSrc(
 }
 
 function rewriteBinPath(binPath: string): string {
+	// Live workspace face may already export the dist CLI (ADR-0027).
+	if (binPath.startsWith("./dist/") && binPath.endsWith(".js")) {
+		return binPath;
+	}
 	if (binPath.startsWith("./src/") && binPath.endsWith(".ts")) {
 		return `./dist/${binPath.slice("./src/".length, -".ts".length)}.js`;
 	}
 	throw new Error(
-		`publish bin must be ./src/*.ts (got ${binPath}); point package.json bin at src`,
+		`publish bin must be ./dist/*.js or ./src/*.ts (got ${binPath})`,
 	);
 }
 

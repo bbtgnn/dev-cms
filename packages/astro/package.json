@@ -4,19 +4,57 @@
 	"private": true,
 	"type": "module",
 	"description": "Astro host \u2014 cms() integration, /cms shell, /cms/api protocol transport",
+	"files": [
+		"dist"
+	],
 	"bin": {
-		"cms": "./src/cli.ts"
+		"cms": "./dist/cli.js"
 	},
 	"exports": {
-		".": "./src/index.ts",
-		"./config": "./src/host/config.ts",
-		"./collection-types": "./src/collection-types.ts",
-		"./content-proxy": "./src/content-proxy/index.ts",
-		"./testing": "./src/testing.ts",
-		"./middleware-entry": "./src/host/middleware-entry.ts",
-		"./protocol-route": "./src/host/protocol-route.ts",
-		"./shell-page.astro": "./src/host/shell-page.astro",
-		"./cms-mount.svelte": "./src/host/cms-mount.svelte"
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"default": "./dist/index.js"
+		},
+		"./config": {
+			"types": "./dist/host/config.d.ts",
+			"import": "./dist/host/config.js",
+			"default": "./dist/host/config.js"
+		},
+		"./collection-types": {
+			"types": "./dist/collection-types.d.ts",
+			"import": "./dist/collection-types.js",
+			"default": "./dist/collection-types.js"
+		},
+		"./content-proxy": {
+			"types": "./dist/content-proxy/index.d.ts",
+			"import": "./dist/content-proxy/index.js",
+			"default": "./dist/content-proxy/index.js"
+		},
+		"./testing": {
+			"types": "./dist/testing.d.ts",
+			"import": "./dist/testing.js",
+			"default": "./dist/testing.js"
+		},
+		"./middleware-entry": {
+			"types": "./dist/host/middleware-entry.d.ts",
+			"import": "./dist/host/middleware-entry.js",
+			"default": "./dist/host/middleware-entry.js"
+		},
+		"./protocol-route": {
+			"types": "./dist/host/protocol-route.d.ts",
+			"import": "./dist/host/protocol-route.js",
+			"default": "./dist/host/protocol-route.js"
+		},
+		"./shell-page.astro": {
+			"import": "./dist/host/shell-page.astro",
+			"default": "./dist/host/shell-page.astro"
+		},
+		"./cms-mount.svelte": {
+			"svelte": "./dist/host/cms-mount.svelte",
+			"import": "./dist/host/cms-mount.svelte",
+			"default": "./dist/host/cms-mount.svelte"
+		}
 	},
 	"dependencies": {
 		"@cms/authoring": "workspace:*",
@@ -35,6 +73,9 @@
 		"zod": "catalog:"
 	},
 	"scripts": {
+		"build": "tsdown",
+		"watch": "tsdown --watch",
+		"watch:assets": "bun ./scripts/copy-runtime-assets.ts --watch",
 		"check": "tsc -p . && svelte-check --tsconfig ./tsconfig.json && bun test src",
 		"pack:lib": "bun run ../../scripts/pack-lib.ts @cms/astro",
 		"test:content-proxy": "bun test ./src/content-proxy/content-proxy.test.ts",

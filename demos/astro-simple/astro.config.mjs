@@ -6,16 +6,13 @@ import { defineConfig } from "astro/config";
 export default defineConfig({
 	integrations: [svelte(), cms()],
 	vite: {
-		// Monorepo only: workspace @cms/* packages export TypeScript with
-		// extensionless relatives. Node ESM cannot load those; Vite must.
-		// Published @cms/* builds would not need this — keep it out of @cms/astro.
 		ssr: {
-			// @cms/*: workspace TS. astro: keep assets/fonts virtuals in Vite
-			// (Node native ESM cannot load virtual:astro:assets/fonts/*).
+			// Linked workspace @cms/* stay in Vite SSR for dist rebuild HMR.
+			// `astro` keeps assets/fonts virtuals out of Node native ESM.
 			noExternal: [/^@cms\//, "astro"],
 		},
 		optimizeDeps: {
-			// Include transitive workspace packages (@cms/authoring via @cms/astro).
+			// Linked package HMR: do not prebundle @cms/* or Vite freezes rebuilt dist.
 			exclude: ["@cms/astro", "@cms/authoring", "@cms/core"],
 		},
 	},

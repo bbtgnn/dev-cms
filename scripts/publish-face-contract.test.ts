@@ -162,15 +162,8 @@ describe("publish face contract", () => {
 
 	test("preserves live dist export maps and dist bins while rewriting deps", () => {
 		const exports = {
-			".": {
-				types: "./dist/index.d.ts",
-				import: "./dist/index.js",
-				default: "./dist/index.js",
-			},
-			"./shell-page.astro": {
-				import: "./dist/host/shell-page.astro",
-				default: "./dist/host/shell-page.astro",
-			},
+			".": "./dist/index.js",
+			"./shell-page.astro": "./dist/host/shell-page.astro",
 		};
 		const live: PackageJson = {
 			name: "@cms/astro",
@@ -205,24 +198,12 @@ describe("publish face contract", () => {
 		try {
 			const dist = path.join(root, "dist");
 			mkdirSync(path.join(dist, "host"), { recursive: true });
-			for (const file of [
-				"index.js",
-				"index.d.ts",
-				"cli.js",
-				"host/shell-page.astro",
-			]) {
+			for (const file of ["index.js", "cli.js", "host/shell-page.astro"]) {
 				writeFileSync(path.join(dist, file), "");
 			}
 			const exports = {
-				".": {
-					types: "./dist/index.d.ts",
-					import: "./dist/index.js",
-					default: "./dist/index.js",
-				},
-				"./shell-page.astro": {
-					import: "./dist/host/shell-page.astro",
-					default: "./dist/host/shell-page.astro",
-				},
+				".": "./dist/index.js",
+				"./shell-page.astro": "./dist/host/shell-page.astro",
 			};
 			const live: PackageJson = {
 				name: "@cms/astro",

@@ -6,26 +6,22 @@
 import { copyFileSync, mkdirSync, watch } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { copyAssets } from "../package-entries.ts";
 
 const pkgRoot = path.resolve(
 	fileURLToPath(new URL(".", import.meta.url)),
 	"..",
 );
 
-const ASSETS = [
-	{
-		from: path.join(pkgRoot, "src/host/shell-page.astro"),
-		to: path.join(pkgRoot, "dist/host/shell-page.astro"),
-	},
-	{
-		from: path.join(pkgRoot, "src/host/cms-mount.svelte"),
-		to: path.join(pkgRoot, "dist/host/cms-mount.svelte"),
-	},
-	{
-		from: path.join(pkgRoot, "src/virtual-modules.d.ts"),
-		to: path.join(pkgRoot, "dist/virtual-modules.d.ts"),
-	},
-] as const;
+const ASSETS = copyAssets.map((from) => {
+	const relative = from.replace(/^\.\//, "");
+	const toRelative = relative.replace(/^src\//, "dist/");
+	return {
+		from: path.join(pkgRoot, relative),
+		to: path.join(pkgRoot, toRelative),
+		basename: path.basename(relative),
+	};
+});
 
 export function copyRuntimeAssets(): void {
 	for (const asset of ASSETS) {
@@ -40,9 +36,7 @@ function watchRuntimeAssets(): void {
 	for (const dir of watched) {
 		watch(dir, { persistent: true }, (_event, filename) => {
 			if (!filename) return;
-			const changed = ASSETS.some(
-				(asset) => path.basename(asset.from) === filename,
-			);
+			const changed = ASSETS.some((asset) => asset.basename === filename);
 			if (changed) copyRuntimeAssets();
 		});
 	}

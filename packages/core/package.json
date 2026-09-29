@@ -8,46 +8,14 @@
 		"dist"
 	],
 	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js",
-			"default": "./dist/index.js"
-		},
-		"./define-cms": {
-			"types": "./dist/define-cms/define-cms.d.ts",
-			"import": "./dist/define-cms/define-cms.js",
-			"default": "./dist/define-cms/define-cms.js"
-		},
-		"./fetch-client": {
-			"types": "./dist/protocol/fetch-client.d.ts",
-			"import": "./dist/protocol/fetch-client.js",
-			"default": "./dist/protocol/fetch-client.js"
-		},
-		"./form-tree": {
-			"types": "./dist/form-tree/form-tree.d.ts",
-			"import": "./dist/form-tree/form-tree.js",
-			"default": "./dist/form-tree/form-tree.js"
-		},
-		"./http": {
-			"types": "./dist/http/index.d.ts",
-			"import": "./dist/http/index.js",
-			"default": "./dist/http/index.js"
-		},
-		"./node": {
-			"types": "./dist/node.d.ts",
-			"import": "./dist/node.js",
-			"default": "./dist/node.js"
-		},
-		"./protocol": {
-			"types": "./dist/protocol/protocol.d.ts",
-			"import": "./dist/protocol/protocol.js",
-			"default": "./dist/protocol/protocol.js"
-		},
-		"./semantic": {
-			"types": "./dist/semantic/index.d.ts",
-			"import": "./dist/semantic/index.js",
-			"default": "./dist/semantic/index.js"
-		}
+		".": "./dist/index.js",
+		"./define-cms": "./dist/define-cms/define-cms.js",
+		"./fetch-client": "./dist/protocol/fetch-client.js",
+		"./form-tree": "./dist/form-tree/form-tree.js",
+		"./http": "./dist/http/index.js",
+		"./node": "./dist/node.js",
+		"./protocol": "./dist/protocol/protocol.js",
+		"./semantic": "./dist/semantic/index.js"
 	},
 	"dependencies": {
 		"pathe": "^2.0.3",
@@ -59,7 +27,7 @@
 	"scripts": {
 		"build": "tsdown",
 		"watch": "tsdown --watch",
-		"check": "tsc -p . && bunx tsc -p ./scripts/tsconfig.fixtures.json",
+		"check": "bun ../../scripts/assert-package-face.ts @cms/core && tsc -p . && bunx tsc -p ./scripts/tsconfig.fixtures.json",
 		"check:allowlist": "bun test src",
 		"pack:lib": "bun run ../../scripts/pack-lib.ts @cms/core",
 		"test:semantic": "bun test ./src/semantic ./src/form-tree ./src/define-cms",

@@ -1,19 +1,8 @@
 import { defineConfig } from "tsdown";
-
-/** Build inputs stay independent of the consumer export map (ADR-0027). */
-const entry = [
-	"./src/index.ts",
-	"./src/define-cms/define-cms.ts",
-	"./src/protocol/fetch-client.ts",
-	"./src/form-tree/form-tree.ts",
-	"./src/http/index.ts",
-	"./src/node.ts",
-	"./src/protocol/protocol.ts",
-	"./src/semantic/index.ts",
-];
+import { buildEntries } from "./package-entries.ts";
 
 export default defineConfig({
-	entry,
+	entry: [...buildEntries],
 	outDir: "dist",
 	dts: true,
 	format: ["esm"],
